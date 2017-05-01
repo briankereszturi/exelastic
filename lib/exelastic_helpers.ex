@@ -1,10 +1,10 @@
-defmodule Exelastic do
+defmodule ExelasticHelpers do
   require Logger
 
   @match_all_query %{"query" => %{"match_all" => %{}}}
   @get_batch_limit 10
 
-  defp url, do: Application.get_env(:exelastic, :url)
+  defp url, do: Application.get_env(:exelastic_helpers, :url)
 
   def put(index_name, type_name, doc) do
     id_key = if Map.has_key?(doc, :id), do: :id, else: "id"

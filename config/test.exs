@@ -1,3 +1,3 @@
 use Mix.Config
 
-config :exelastic, url: "http://localhost:9200"
+config :exelastic_helpers, url: "http://localhost:9200"
