@@ -1,8 +1,8 @@
-defmodule ExelasticHelpers.Mixfile do
+defmodule ExElasticHelpers.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :exelastic_helpers,
+    [app: :ex_elastic_helpers,
      version: "0.1.0",
      elixir: "~> 1.4",
      build_embedded: Mix.env == :prod,
