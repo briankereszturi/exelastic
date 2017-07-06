@@ -71,6 +71,17 @@ defmodule ExElasticHelpers do
   end
 
   @doc """
+  Delete all docs that match.
+  """
+  def delete_match(index_name, type_name, match) do
+    query = %{"query" => %{"match" => match}}
+    case Elastix.Document.delete(url(), index_name, type_name, query) do
+      {:ok, %{status_code: 200}} -> :ok
+      _ -> {:error, :internal_server_error}
+    end
+  end
+
+  @doc """
   """
   def patch(index_name, type_name, id, patch) do
     payload = %{doc: patch}
