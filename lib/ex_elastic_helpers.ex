@@ -6,11 +6,11 @@ defmodule ExElasticHelpers do
 
   defp url, do: Application.get_env(:ex_elastic_helpers, :url)
 
-  def put(index_name, type_name, doc) do
+  def put(index_name, type_name, doc, query_params \\ []) do
     id_key = if Map.has_key?(doc, :id), do: :id, else: "id"
     with true <- Map.has_key?(doc, id_key),
          {id, doc} <- Map.pop(doc, id_key),
-         {:ok, %{body: _body, status_code: 201}} <- Elastix.Document.index(url(), index_name, type_name, id, doc) do
+         {:ok, %{body: _body, status_code: 201}} <- Elastix.Document.index(url(), index_name, type_name, id, doc, query_params) do
       :ok
     else
       false -> {:error, :bad_request}
