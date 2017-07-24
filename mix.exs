@@ -16,7 +16,7 @@ defmodule ExElasticHelpers.Mixfile do
 
   defp deps do
     [
-      {:elastix, git: "https://github.com/briankereszturi/elastix.git", branch: "delete-by-query"}
+      {:elastix, git: "https://github.com/werbitzky/elastix.git"}
     ]
   end
 end
