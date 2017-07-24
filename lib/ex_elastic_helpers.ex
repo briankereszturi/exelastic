@@ -20,6 +20,7 @@ defmodule ExElasticHelpers do
 
   def query(index_name, type_name, query, limit \\ 50) do
     query = %{"query" => query}
+    get_helper(index_name, type_name, query, limit)
   end
 
   def match(index_name, type_name, match, limit \\ 50) do
