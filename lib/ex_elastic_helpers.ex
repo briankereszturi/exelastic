@@ -105,7 +105,7 @@ defmodule ExElasticHelpers do
 
     case Elastix.Search.search(url(), index_name, [type_name], query, qp) do
       {:ok, %{body: body, status_code: 200}} ->
-        metadata = %{}
+        metadata = %{ total: body["hits"]["total"] }
         docs = body["hits"]["hits"] |> Enum.map(&map_item/1)
 
         total = if limit == :infinity, do: body["hits"]["total"], else: limit
