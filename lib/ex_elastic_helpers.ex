@@ -18,14 +18,14 @@ defmodule ExElasticHelpers do
     end
   end
 
-  def query(index_name, type_name, query, limit \\ 50) do
+  def query(index_name, type_name, query, limit \\ 50, from \\ 0) do
     query = %{"query" => query}
-    get_helper(index_name, type_name, query, limit)
+    get_helper(index_name, type_name, query, limit, from)
   end
 
-  def match(index_name, type_name, match, limit \\ 50) do
+  def match(index_name, type_name, match, limit \\ 50, from \\ 0) do
     query = %{"match" => match}
-    query(index_name, type_name, query, limit)
+    query(index_name, type_name, query, limit, from)
   end
 
   @doc """
@@ -103,7 +103,7 @@ defmodule ExElasticHelpers do
       do: @get_batch_limit, else: limit - from
     qp = %{from: from, size: size}
 
-    case  Elastix.Search.search(url(), index_name, [type_name], query, qp) do
+    case Elastix.Search.search(url(), index_name, [type_name], query, qp) do
       {:ok, %{body: body, status_code: 200}} ->
         metadata = %{}
         docs = body["hits"]["hits"] |> Enum.map(&map_item/1)
