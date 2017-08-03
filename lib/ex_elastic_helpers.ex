@@ -55,6 +55,16 @@ defmodule ExElasticHelpers do
     end
   end
 
+  def mget(query, index_name \\ nil, type_name \\ nil, query_params \\ []) do
+    case Elastix.Document.mget(url(), query, index_name, type_name, query_params) do
+      {:ok, %{body: body, status_code: 200}} ->
+        docs = Enum.map(body["docs"], fn d -> map_item(d) end)
+        {:ok, docs}
+      {:ok, %{status_code: 404}} -> {:error, :not_found}
+      _ -> {:error, :internal_server_error}
+    end
+  end
+
   @doc """
   Delete a doc by id.
   """
