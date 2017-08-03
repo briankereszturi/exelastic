@@ -14,7 +14,9 @@ defmodule ExElasticHelpers do
       :ok
     else
       false -> {:error, :bad_request}
-      _ -> {:error, :internal_server_error}
+      e ->
+        Logger.error "Error putting document: #{inspect e}"
+        {:error, :internal_server_error}
     end
   end
 
