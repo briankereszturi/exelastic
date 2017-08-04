@@ -54,6 +54,9 @@ defmodule ExElasticHelpers do
       _ -> {:error, :internal_server_error}
     end
   end
+  def get(index_name, type_name, from, limit, query \\ @match_all_query),
+    do: get_helper(index_name, type_name, query, limit, from)
+
 
   def mget(query, index_name \\ nil, type_name \\ nil, query_params \\ []) do
     case Elastix.Document.mget(url(), query, index_name, type_name, query_params) do
