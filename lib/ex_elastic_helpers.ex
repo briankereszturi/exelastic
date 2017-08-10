@@ -72,7 +72,7 @@ defmodule ExElasticHelpers do
   Delete a doc by id.
   """
   def delete(index_name, type_name, id, query_params \\ []) do
-    case Elastix.Document.delete(url(), index_name, type_name, id) do
+    case Elastix.Document.delete(url(), index_name, type_name, id, query_params) do
       {:ok, %{status_code: 200}} -> :ok
       {:ok, %{status_code: 404}} -> {:error, :not_found}
       _ -> {:error, :internal_server_error}
