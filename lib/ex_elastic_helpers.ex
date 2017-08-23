@@ -19,7 +19,7 @@ defmodule ExElasticHelpers do
   end
 
   def put(index_name, type_name, doc, query_params \\ []) do
-    with {:ok, id, doc} <- extract_id(doc)
+    with {:ok, id, doc} <- extract_id(doc),
          {:ok, %{body: _body, status_code: sc}} when sc in 200..299 <- Elastix.Document.index(url(), index_name, type_name, id, doc, query_params) do
       :ok
     else
