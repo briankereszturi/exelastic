@@ -7,10 +7,19 @@ defmodule ExElasticHelpers do
 
   defp url, do: Application.get_env(:ex_elastic_helpers, :url)
 
-  def put(index_name, type_name, doc, query_params \\ []) do
+  defp extract_id(doc) do
     id_key = if Map.has_key?(doc, :id), do: :id, else: "id"
     with true <- Map.has_key?(doc, id_key),
-         {id, doc} <- Map.pop(doc, id_key),
+         {id, doc} <- Map.pop(doc, id_key) do
+      {:ok, id, doc}
+    else
+      false -> {:error, :bad_request}
+      _ -> {:error, :internal_server_error}
+    end
+  end
+
+  def put(index_name, type_name, doc, query_params \\ []) do
+    with {:ok, id, doc} <- extract_id(doc)
          {:ok, %{body: _body, status_code: sc}} when sc in 200..299 <- Elastix.Document.index(url(), index_name, type_name, id, doc, query_params) do
       :ok
     else
@@ -127,12 +136,13 @@ defmodule ExElasticHelpers do
 
   @doc """
   """
-  def patch(index_name, type_name, id, patch) do
-    payload = %{doc: patch}
-    case Elastix.Document.update(url(), index_name, type_name, id, payload) do
-      {:ok, %{status_code: 200}} -> :ok
-      {:ok, %{status_code: 404}} -> {:error, :not_found}
-      _ -> {:error, :internal_server_error}
+  def patch(index_name, type_name, patch) do
+    with {:ok, id, doc} <- extract_id(patch) do
+      case Elastix.Document.update(url(), index_name, type_name, id, %{doc: doc}) do
+        {:ok, %{status_code: 200}} -> :ok
+        {:ok, %{status_code: 404}} -> {:error, :not_found}
+        _ -> {:error, :internal_server_error}
+      end
     end
   end
   
