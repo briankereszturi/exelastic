@@ -2,7 +2,7 @@ defmodule ExElasticHelpers do
   require Logger
 
   @match_all_query %{"query" => %{"match_all" => %{}}}
-  @scroll_all_query %{"size" => 100, %{"query" => %{"match_all" => %{}}}, "sort" => ["_doc"]}
+  @scroll_all_query %{"size" => 100, "query" => %{"match_all" => %{}}, "sort" => ["_doc"]}
   @get_batch_limit 10
 
   defp url, do: Application.get_env(:ex_elastic_helpers, :url)
