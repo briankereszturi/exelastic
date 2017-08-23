@@ -2,6 +2,7 @@ defmodule ExElasticHelpers do
   require Logger
 
   @match_all_query %{"query" => %{"match_all" => %{}}}
+  @scroll_all_query %{size: 100, %{"query" => %{"match_all" => %{}}}, sort: ["_doc"]}
   @get_batch_limit 10
 
   defp url, do: Application.get_env(:ex_elastic_helpers, :url)
@@ -28,6 +29,29 @@ defmodule ExElasticHelpers do
   def match(index_name, type_name, match, limit \\ 50, from \\ 0) do
     query = %{"match" => match}
     query(index_name, type_name, query, limit, from)
+  end
+
+  def scroll(index_name, type_name, query \\ @scroll_all_query) do
+    case Elastix.Search.search(url(), index_name, [], query, scroll: "1m") do
+      {:ok, %{body: body, status_code: 200}} ->
+        docs = body["hits"]["hits"] |> Enum.map(&map_item/1)
+        meta = %{scroll_id: body["_scroll_id"]}
+        {:ok, meta, docs}
+      {:ok, %{status_code: 404}} -> {:error, :not_found}
+      _ -> {:error, :internal_server_error}
+    end
+  end
+
+  def scroll(scroll_id) do
+    query = %{scroll: "1m", scroll_id: scroll_id}
+    case Elastix.Search.scroll(url(), query) do
+      {:ok, %{body: body, status_code: 200}} ->
+        docs = body["hits"]["hits"] |> Enum.map(&map_item/1)
+        meta = %{scroll_id: body["_scroll_id"]}
+        {:ok, meta, docs}
+      {:ok, %{status_code: 404}} -> {:error, :not_found}
+      _ -> {:error, :internal_server_error}
+    end
   end
 
   @doc """
